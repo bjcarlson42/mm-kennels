@@ -18,5 +18,10 @@ namespace MM_Kennels
             dayScheduled = dscheduled;
             isOccupied = occupied;
         }
+
+        public override string ToString()
+        {
+            return $"Min: {cageWeightMin}\nMax: {cageWeightMax}\nDay Scheduled: {dayScheduled}, \nOccupied: {isOccupied}";
+        }
     }
 }

@@ -6,85 +6,85 @@ namespace MM_Kennels
 {
     class Program
     {
+        static List<Animal> animals = new List<Animal>();
+        static List<Cage> cages = new List<Cage>();
+
         static void Main(string[] args)
         {
-            List<Cage> cages = new List<Cage>();
-            List<Animal> animals = new List<Animal>();
-
-            //StreamReader sr = new StreamReader(args[1]);
-            //string text = sr.ReadLine();
-            //foreach (char t in text)
-            //{
-            //    int min = int.Parse(args[1]);
-            //    int max = int.Parse(args[2]);
-            //    int ds = 0; //ds = day scheduled
-
-            //    cages.Add(new Cage(min, max, ds, false));
-            //}
-
-            Console.WriteLine("Loading cages...");
-
-            foreach (Cage c in cages)
+            while (true)
             {
-                Console.WriteLine(c);
-            }
+                /*
+                 * Reading the cages in from a textfile and storing them in order in the cage class
+                 */
+                string line;
+                StreamReader file = new StreamReader(args[0]);
+                while ((line = file.ReadLine()) != null)
+                {
+                    string[] cage = line.Split(new char[] { ' ' });
+                    string min = cage[0];
+                    string max = cage[1];
+                    cages.Add(new Cage(int.Parse(min), int.Parse(max), 0, false));
+                }
+                file.Close();
 
-            bool run = true;
-            while (run)
-            {
                 if (args[0].ToLower() == "schedule")
                 {
-                    //Schedule(args[1], args[2], args[3], args[4]);
+                    continue;
                 }
                 else if (args[0].ToLower() == "day")
                 {
-
+                    continue;
                 }
                 else if (args[0].ToLower() == "animal")
                 {
-                    //IsScheduled(args[0], args);
-                    Console.WriteLine(IsScheduled(args[1], args));
-
+                    continue;
                 }
                 else
                 {
                     Console.WriteLine("Please enter a valid command.");
                     Console.ReadKey();
                 }
-
-                Console.WriteLine("Do you want to enter another command? Enter \"y\" or \"n\" and press enter");
-                Console.ReadLine();
-                if(Console.ReadLine() == "y")
-                {
-                    run = true;
-                    Console.WriteLine("Enter Command...");
-                }
-                else
-                {
-                    run = false;
-                }
+                Console.WriteLine("Program finished...");
             }
         }
 
         public static void Schedule(string petName, int petWeight, int startDay, int lengthOfStay)
         {
-
+            animals.Add(new Animal(petName, petWeight, false, startDay, lengthOfStay));
         }
 
-        public static string Info(int dayNumber)
+        public static void Info(int dayNumber)
         {
-            string info = "";
+            foreach(Animal a in animals)
+            {
+                if (dayNumber == a.startDate)
+                {
+                    Console.WriteLine($"{a.ToString()}");
+                }
+            }
 
-            return info;
+            foreach(Cage c in cages)
+            {
+                if(c.isOccupied == false)
+                {
+                    Console.WriteLine($"{c.ToString()}");
+                }
+            }
         }
 
-        public static bool IsScheduled(string name, string[] args)
+        public static void IsScheduled(string name)
         {
-            name = args[1];
-
-            Animal animal = new Animal(args[1], 100, false);
-
-            return animal.inCage;
+            foreach (Animal a in animals)
+            {
+                if (name == a.name)
+                {
+                    Console.WriteLine($"Day scheduled: {a.startDate}");
+                }
+                else
+                {
+                    Console.WriteLine("Not Scheduled");
+                }
+            }      
         }
     }
 }
