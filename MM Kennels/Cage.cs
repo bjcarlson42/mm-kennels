@@ -6,22 +6,21 @@ namespace MM_Kennels
 {
     class Cage
     {
-        public int cageWeightMin { get; }
-        public int cageWeightMax { get; }
-        public int dayScheduled { get; }
-        public bool isOccupied { get; }
+        public int CageWeightMin { get; }
+        public int CageWeightMax { get; }
+        public int ID { get; set; }
+        public int Ssd { get; set; } //ssd = scheduled start date
 
-        public Cage(int min, int max, int dscheduled, bool occupied)
+        public Cage(int min, int max, int dscheduled)
         {
-            cageWeightMin = min;
-            cageWeightMax = max;
-            dayScheduled = dscheduled;
-            isOccupied = occupied;
+            CageWeightMin = min;
+            CageWeightMax = max;
+            Ssd = dscheduled;
         }
 
         public override string ToString()
         {
-            return $"Min: {cageWeightMin}\nMax: {cageWeightMax}\nDay Scheduled: {dayScheduled}, \nOccupied: {isOccupied}";
+            return $"{CageWeightMin}-{CageWeightMax}";
         }
     }
 }

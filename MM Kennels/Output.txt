@@ -1,0 +1,24 @@
+Enter commands, one per line (press Ctrl+Z to exit):
+
+rufus could not be scheduled on that day
+
+mumble could not be scheduled on that day
+
+tumble could not be scheduled on that day
+
+bumble could not be scheduled on that day
+
+hobbes could not be scheduled on that day
+
+whiskers could not be scheduled on that day
+
+Animals scheduled on that day:
+
+Cages empty on that day
+
+
+
+Animals scheduled on that day:
+
+Cages empty on that day
+
