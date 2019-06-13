@@ -7,20 +7,18 @@ namespace MM_Kennels
     class Cage
     {
         public int CageWeightMin { get; }
-        public int CageWeightMax { get; }
-        public int ID { get; set; }
-        public int Ssd { get; set; } //ssd = scheduled start date
-
-        public Cage(int min, int max, int dscheduled)
+        public int CageWeightMax { get; } 
+        public int ID { get; }
+        public Cage(int min, int max, int id)
         {
             CageWeightMin = min;
             CageWeightMax = max;
-            Ssd = dscheduled;
+            ID = id;
         }
 
         public override string ToString()
         {
-            return $"{CageWeightMin}-{CageWeightMax}";
+            return ID.ToString();
         }
     }
 }

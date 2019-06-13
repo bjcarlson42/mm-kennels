@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace MM_Kennels
 {
@@ -8,18 +9,10 @@ namespace MM_Kennels
     {
         static List<Animal> animals = new List<Animal>();
         static List<Cage> cages = new List<Cage>();
-        static List<Year> days = new List<Year>();
+        static List<Days> days = new List<Days>();
 
         static void Main(string[] args)
         {
-            for(int day = 1; day <= 365; day++)
-            {
-                days.Add(new Year(day, false));
-            }
-
-            //Console.WriteLine(days[0].day);
-            //Console.WriteLine(days[364].day);
-
             if (args.Length < 1)
             {
                 Console.WriteLine("Usage: mmkennels cagefile");
@@ -37,6 +30,7 @@ namespace MM_Kennels
             using (var reader = new StreamReader(args[0]))
             {
                 string line;
+                int i = 1;
 
                 while ((line = reader.ReadLine()) != null)
                 {
@@ -45,7 +39,15 @@ namespace MM_Kennels
                     if ((values.Length == 2) &&
                            int.TryParse(values[0], out var minWeight) &&
                            int.TryParse(values[1], out var maxWeight))
-                        cages.Add(new Cage(minWeight, maxWeight, 0));
+                        cages.Add(new Cage(minWeight, maxWeight, i++));
+                }
+            }
+
+            for (int day = 1; day <= 365; day++)
+            {
+                foreach (Cage cage in cages)
+                {
+                    days.Add(new Days(day, cage, true));
                 }
             }
 
@@ -54,6 +56,12 @@ namespace MM_Kennels
 
             while ((request = Console.ReadLine()) != null)
             {
+                foreach(Animal a in animals)
+                {
+                    Console.WriteLine(a.ToString()); //debugging purposes
+                }
+                Console.WriteLine();
+
                 var values = request.Split(' ');
 
                 switch (values[0])
@@ -93,66 +101,102 @@ namespace MM_Kennels
 
         public static void Schedule(string petName, int petWeight, int startDay, int lengthOfStay)
         {
-            bool isScheduled = false;
-            int c;
+            var canBeScheduled = false;
+            var c = cages[0];
+            var emptyDays = (from Days day in days
+                              where day.IsEmpty
+                              where petWeight > day.SpecificCage.CageWeightMin && petWeight < day.SpecificCage.CageWeightMax
+                              where day.Day >= startDay && day.Day < startDay + lengthOfStay
+                              select day);
 
-            for (c = 0; c < cages.Count && isScheduled == false; c++)
+            foreach (Cage cage in cages)
             {
-                if (petWeight > cages[c].CageWeightMin && petWeight < cages[c].CageWeightMax &&  )
+                foreach (Days day in emptyDays)
                 {
-                    animals.Add(new Animal(petName, petWeight, false, startDay, lengthOfStay, cages[c]));
-                    for(int i = 0; i < lengthOfStay; i++)
-                    {
-                        
-                    }
-                    cages[c].Ssd = startDay;
+                        if(day.SpecificCage.Equals(lengthOfStay))
+                        {
+                            Console.WriteLine("Assigned to cage" + c);
+                            break;
+                        }
                 }
             }
-            if (isScheduled)
+            for (int i = startDay; i < startDay + lengthOfStay; i++)
             {
-                Console.WriteLine($"{petName} is scheduled for {c}");
+                days[i].IsEmpty = false;
+            }
+
+            if (canBeScheduled)
+            {
+                animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay));
+                for (int i = startDay + 1; i < lengthOfStay + startDay; i++)
+                {
+                    animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay));
+                }
+                Console.WriteLine($"{petName} is scheduled for cage {c}");
             }
             else
             {
-                Console.WriteLine($"{petName} could not be scheduled on that day");
+                Console.WriteLine($"{petName} can not be scheduled for that day.");
             }
         }
+
 
         public static void Info(int dayNumber)
         {
             Console.WriteLine("Animals scheduled on that day:");
-            foreach (Animal a in animals)
+            var scheduled = false;
+            var animalName = "";
+            foreach (Animal a in animals.Distinct())
             {
-                if (dayNumber == a.Ssd)
+                foreach (var c in days)
                 {
-                    Console.WriteLine($"{a.ToString()}");
+                    for(int i = a.Ssd; i < a.Ssd + a.LengthOfStay; i++)
+                    {
+                        if (dayNumber == i)
+                        {
+                            scheduled = true;
+                            animalName = a.ToString();
+                            c.IsEmpty = false;
+                        }
+                    }
                 }
+            }
+
+            if (scheduled)
+            {
+                Console.WriteLine(animalName);
             }
 
             Console.WriteLine();
 
-            Console.WriteLine("Cages empty on that day");
-            foreach (Cage c in cages)
+            Console.WriteLine("Cages empty on that day:");
+            var emptyCages = (from Days d in days where d.IsEmpty == true select d);
+            foreach (var c in emptyCages)
             {
-                if (dayNumber == c.Ssd)
-                {                  
-                    Console.WriteLine($"{c.ToString()}");
-                }
+                 Console.WriteLine($"{c.SpecificCage.ToString()}");
             }
         }
 
         public static void IsScheduled(string name)
         {
-            foreach (Animal a in animals)
+            var scheduled = false;
+            var animalName = "";
+            foreach (Animal a in animals.Distinct())
             {
                 if (name == a.Name)
                 {
-                    Console.WriteLine($"{name} scheduled for day {a.Ssd}");
+                    scheduled = true;
+                    animalName = a.ToString();
                 }
-                else
-                {
-                    Console.WriteLine($"{name} not scheduled");
-                }
+
+            }
+            if(scheduled)
+            {
+                Console.WriteLine(animalName);
+            }
+            else
+            {
+                Console.WriteLine($"{name} not scheduled");
             }
         }
     }
