@@ -56,12 +56,6 @@ namespace MM_Kennels
 
             while ((request = Console.ReadLine()) != null)
             {
-                foreach(Animal a in animals)
-                {
-                    Console.WriteLine(a.ToString()); //debugging purposes
-                }
-                Console.WriteLine();
-
                 var values = request.Split(' ');
 
                 switch (values[0])
@@ -111,26 +105,34 @@ namespace MM_Kennels
 
             foreach (Cage cage in cages)
             {
+                int counter = 0;
                 foreach (Days day in emptyDays)
                 {
-                        if(day.SpecificCage.Equals(lengthOfStay))
-                        {
-                            Console.WriteLine("Assigned to cage" + c);
-                            break;
-                        }
+                    if(cage == day.SpecificCage)
+                    {
+                        counter++;
+                    }                       
                 }
-            }
-            for (int i = startDay; i < startDay + lengthOfStay; i++)
-            {
-                days[i].IsEmpty = false;
+                if(counter == lengthOfStay)
+                {
+                    canBeScheduled = true;
+                    c = cage;
+                    break;
+                }
             }
 
             if (canBeScheduled)
             {
                 animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay));
-                for (int i = startDay + 1; i < lengthOfStay + startDay; i++)
+                for (int i = startDay; i < lengthOfStay + startDay; i++)
                 {
-                    animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay));
+                    foreach (Days day in emptyDays)
+                    {
+                        if (day.Day == i && c == day.SpecificCage)
+                        {
+                            day.IsEmpty = false;   
+                        }
+                    }
                 }
                 Console.WriteLine($"{petName} is scheduled for cage {c}");
             }
@@ -144,33 +146,18 @@ namespace MM_Kennels
         public static void Info(int dayNumber)
         {
             Console.WriteLine("Animals scheduled on that day:");
-            var scheduled = false;
-            var animalName = "";
-            foreach (Animal a in animals.Distinct())
+            foreach (Animal a in animals)
             {
-                foreach (var c in days)
+                if(a.Ssd <= dayNumber && a.Ssd + a.LengthOfStay > dayNumber)
                 {
-                    for(int i = a.Ssd; i < a.Ssd + a.LengthOfStay; i++)
-                    {
-                        if (dayNumber == i)
-                        {
-                            scheduled = true;
-                            animalName = a.ToString();
-                            c.IsEmpty = false;
-                        }
-                    }
+                    Console.WriteLine(a);
                 }
-            }
-
-            if (scheduled)
-            {
-                Console.WriteLine(animalName);
             }
 
             Console.WriteLine();
 
             Console.WriteLine("Cages empty on that day:");
-            var emptyCages = (from Days d in days where d.IsEmpty == true select d);
+            var emptyCages = (from Days d in days where d.Day == dayNumber && d.IsEmpty select d);
             foreach (var c in emptyCages)
             {
                  Console.WriteLine($"{c.SpecificCage.ToString()}");
@@ -180,19 +167,18 @@ namespace MM_Kennels
         public static void IsScheduled(string name)
         {
             var scheduled = false;
-            var animalName = "";
-            foreach (Animal a in animals.Distinct())
+            var animalInfo = "";
+            foreach (Animal a in animals)
             {
                 if (name == a.Name)
                 {
                     scheduled = true;
-                    animalName = a.ToString();
+                    animalInfo = a.ToString();
                 }
-
             }
             if(scheduled)
             {
-                Console.WriteLine(animalName);
+                Console.WriteLine(animalInfo);
             }
             else
             {
