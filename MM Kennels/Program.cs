@@ -43,14 +43,6 @@ namespace MM_Kennels
                 }
             }
 
-            for (int day = 1; day <= 365; day++)
-            {
-                foreach (Cage cage in cages)
-                {
-                    days.Add(new Days(day, cage, true));
-                }
-            }
-
             Console.WriteLine("Enter commands, one per line (press Ctrl+Z to exit):");
             Console.WriteLine();
 
@@ -96,28 +88,26 @@ namespace MM_Kennels
         public static void Schedule(string petName, int petWeight, int startDay, int lengthOfStay)
         {
             var canBeScheduled = false;
-            var c = cages[0];
-            var emptyDays = (from Days day in days
-                              where day.IsEmpty
-                              where petWeight > day.SpecificCage.CageWeightMin && petWeight < day.SpecificCage.CageWeightMax
-                              where day.Day >= startDay && day.Day < startDay + lengthOfStay
-                              select day);
+            var c = cages[0];          
 
             foreach (Cage cage in cages)
             {
-                int counter = 0;
-                foreach (Days day in emptyDays)
+                if (petWeight > cage.CageWeightMin && petWeight < cage.CageWeightMax)
                 {
-                    if(cage == day.SpecificCage)
+                    int counter = 0;
+                    foreach (Days day in days)
                     {
-                        counter++;
-                    }                       
-                }
-                if(counter == lengthOfStay)
-                {
-                    canBeScheduled = true;
-                    c = cage;
-                    break;
+                        if (cage == day.SpecificCage && startDay <= day.Day && startDay + lengthOfStay > day.Day)
+                        {
+                            counter++;
+                        }
+                    }
+                    if (counter == 0)
+                    {
+                        canBeScheduled = true;
+                        c = cage;
+                        break;
+                    }
                 }
             }
 
@@ -126,13 +116,7 @@ namespace MM_Kennels
                 animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay));
                 for (int i = startDay; i < lengthOfStay + startDay; i++)
                 {
-                    foreach (Days day in emptyDays)
-                    {
-                        if (day.Day == i && c == day.SpecificCage)
-                        {
-                            day.IsEmpty = false;   
-                        }
-                    }
+                    days.Add(new Days(i, c, false));
                 }
                 Console.WriteLine($"{petName} is scheduled for cage {c}");
             }
@@ -148,7 +132,7 @@ namespace MM_Kennels
             Console.WriteLine("Animals scheduled on that day:");
             foreach (Animal a in animals)
             {
-                if(a.Ssd <= dayNumber && a.Ssd + a.LengthOfStay > dayNumber)
+                if (a.Ssd <= dayNumber && a.Ssd + a.LengthOfStay > dayNumber)
                 {
                     Console.WriteLine(a);
                 }
@@ -157,10 +141,22 @@ namespace MM_Kennels
             Console.WriteLine();
 
             Console.WriteLine("Cages empty on that day:");
-            var emptyCages = (from Days d in days where d.Day == dayNumber && d.IsEmpty select d);
-            foreach (var c in emptyCages)
+            var occupiedCages = (from Days d in days where d.Day == dayNumber select d.SpecificCage);
+            foreach (Cage cage in cages)
             {
-                 Console.WriteLine($"{c.SpecificCage.ToString()}");
+                bool isEmpty = true;
+                foreach (var c in occupiedCages)
+                {
+                    if(cage == c)
+                    {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                if(isEmpty)
+                {
+                    Console.WriteLine(cage);
+                }          
             }
         }
 
@@ -176,7 +172,7 @@ namespace MM_Kennels
                     animalInfo = a.ToString();
                 }
             }
-            if(scheduled)
+            if (scheduled)
             {
                 Console.WriteLine(animalInfo);
             }
