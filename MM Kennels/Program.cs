@@ -87,31 +87,16 @@ namespace MM_Kennels
 
         public static void Schedule(string petName, int petWeight, int startDay, int lengthOfStay)
         {
-            var canBeScheduled = false;
-            var c = cages[0];          
+            var occupiedCages = from day in days
+                                where startDay <= day.Day && startDay + lengthOfStay > day.Day
+                                select day.SpecificCage;
+            var query = from cage in cages
+                        where petWeight > cage.CageWeightMin && petWeight < cage.CageWeightMax
+                        where !occupiedCages.Contains(cage)
+                        select cage;
+            var c = query.FirstOrDefault();
 
-            foreach (Cage cage in cages)
-            {
-                if (petWeight > cage.CageWeightMin && petWeight < cage.CageWeightMax)
-                {
-                    int counter = 0;
-                    foreach (Days day in days)
-                    {
-                        if (cage == day.SpecificCage && startDay <= day.Day && startDay + lengthOfStay > day.Day)
-                        {
-                            counter++;
-                        }
-                    }
-                    if (counter == 0)
-                    {
-                        canBeScheduled = true;
-                        c = cage;
-                        break;
-                    }
-                }
-            }
-
-            if (canBeScheduled)
+            if (c != null)
             {
                 animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay));
                 for (int i = startDay; i < lengthOfStay + startDay; i++)
@@ -143,17 +128,8 @@ namespace MM_Kennels
             Console.WriteLine("Cages empty on that day:");
             var occupiedCages = (from Days d in days where d.Day == dayNumber select d.SpecificCage);
             foreach (Cage cage in cages)
-            {
-                bool isEmpty = true;
-                foreach (var c in occupiedCages)
-                {
-                    if(cage == c)
-                    {
-                        isEmpty = false;
-                        break;
-                    }
-                }
-                if(isEmpty)
+            {   
+                if(!occupiedCages.Contains(cage))
                 {
                     Console.WriteLine(cage);
                 }          
