@@ -1,24 +1,34 @@
 Enter commands, one per line (press Ctrl+Z to exit):
 
-rufus could not be scheduled on that day
+rufus is scheduled for cage 4
 
-mumble could not be scheduled on that day
+mumble is scheduled for cage 1
 
-tumble could not be scheduled on that day
+tumble is scheduled for cage 2
 
-bumble could not be scheduled on that day
+bumble is scheduled for cage 3
 
-hobbes could not be scheduled on that day
+hobbes can not be scheduled for that day.
 
-whiskers could not be scheduled on that day
-
-Animals scheduled on that day:
-
-Cages empty on that day
-
-
+whiskers is scheduled for cage 1
 
 Animals scheduled on that day:
+rufus 103 57 64
+mumble 20 57 60
+tumble 30 57 64
+bumble 40 57 67
 
-Cages empty on that day
+Cages empty on that day:
+
+mumble 20 57 60
+
+scoobydoo not scheduled
+
+Animals scheduled on that day:
+rufus 103 57 64
+tumble 30 57 64
+bumble 40 57 67
+
+Cages empty on that day:
+1
 
