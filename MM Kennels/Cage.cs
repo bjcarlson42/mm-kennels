@@ -9,16 +9,18 @@ namespace MM_Kennels
         public int CageWeightMin { get; }
         public int CageWeightMax { get; } 
         public int ID { get; }
-        public Cage(int min, int max, int id)
+        public bool IsOccupied { get; set; }
+        public Cage(int min, int max, int id, bool io)
         {
             CageWeightMin = min;
             CageWeightMax = max;
             ID = id;
+            IsOccupied = io;
         }
 
         public override string ToString()
         {
-            return ID.ToString();
+            return $"{ID} {CageWeightMin} {CageWeightMax}";
         }
     }
 }

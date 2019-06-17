@@ -9,7 +9,6 @@ namespace MM_Kennels
     {
         static List<Animal> animals = new List<Animal>();
         static List<Cage> cages = new List<Cage>();
-        static List<Days> days = new List<Days>();
 
         static void Main(string[] args)
         {
@@ -39,7 +38,7 @@ namespace MM_Kennels
                     if ((values.Length == 2) &&
                            int.TryParse(values[0], out var minWeight) &&
                            int.TryParse(values[1], out var maxWeight))
-                        cages.Add(new Cage(minWeight, maxWeight, i++));
+                        cages.Add(new Cage(minWeight, maxWeight, i++, false));
                 }
             }
 
@@ -87,9 +86,9 @@ namespace MM_Kennels
 
         public static void Schedule(string petName, int petWeight, int startDay, int lengthOfStay)
         {
-            var occupiedCages = from day in days
-                                where startDay <= day.Day && startDay + lengthOfStay > day.Day
-                                select day.SpecificCage;
+            var occupiedCages = from a in animals
+                                where startDay < a.StartDate + a.LengthOfStay && startDay + lengthOfStay > a.StartDate
+                                select a.Cage;
             var query = from cage in cages
                         where petWeight > cage.CageWeightMin && petWeight < cage.CageWeightMax
                         where !occupiedCages.Contains(cage)
@@ -98,11 +97,7 @@ namespace MM_Kennels
 
             if (c != null)
             {
-                animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay));
-                for (int i = startDay; i < lengthOfStay + startDay; i++)
-                {
-                    days.Add(new Days(i, c, false));
-                }
+                animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay, c));
                 Console.WriteLine($"{petName} is scheduled for cage {c}");
             }
             else
@@ -114,25 +109,26 @@ namespace MM_Kennels
 
         public static void Info(int dayNumber)
         {
+            List<Cage> OccupiedCages = new List<Cage>();
             Console.WriteLine("Animals scheduled on that day:");
             foreach (Animal a in animals)
             {
-                if (a.Ssd <= dayNumber && a.Ssd + a.LengthOfStay > dayNumber)
+                if (a.StartDate <= dayNumber && a.StartDate + a.LengthOfStay > dayNumber)
                 {
                     Console.WriteLine(a);
+                    OccupiedCages.Add(a.Cage);
                 }
             }
 
             Console.WriteLine();
 
             Console.WriteLine("Cages empty on that day:");
-            var occupiedCages = (from Days d in days where d.Day == dayNumber select d.SpecificCage);
-            foreach (Cage cage in cages)
-            {   
-                if(!occupiedCages.Contains(cage))
+            foreach (var c in cages)
+            {
+                if (!OccupiedCages.Contains(c))
                 {
-                    Console.WriteLine(cage);
-                }          
+                    Console.WriteLine(c);
+                }
             }
         }
 
