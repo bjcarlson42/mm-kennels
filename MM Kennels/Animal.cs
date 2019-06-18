@@ -13,13 +13,12 @@ namespace MM_Kennels
         
         public Cage Cage { get; set; }
 
-        public Animal(string n, int w, int s, int l, Cage c)
+        public Animal(string n, int w, int s, int l)
         {
             Name = n;
             Weight = w;
             StartDate = s;
             LengthOfStay = l;
-            Cage = c;
         }
 
         public override string ToString()

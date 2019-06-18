@@ -2,13 +2,20 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace MM_Kennels
 {
     class Program
     {
-        static List<Animal> animals = new List<Animal>();
-        static List<Cage> cages = new List<Cage>();
+        private readonly Scheduler _scheduler;
+        private readonly KennelDatabase _database;
+
+        private Program()
+        {
+            _database = new KennelDatabase();
+            _scheduler = new Scheduler(_database);
+        }
 
         static void Main(string[] args)
         {
@@ -24,28 +31,50 @@ namespace MM_Kennels
                 return;
             }
 
-            string request;
+            var program = new Program();
 
-            using (var reader = new StreamReader(args[0]))
+            program.InitializeDatabase(args[0]);
+            program.Run();
+        }
+
+        private void InitializeDatabase(string cageFile)
+        {
+            _database.Animals.Clear();
+            _database.Cages.Clear();
+
+            using (var reader = new StreamReader(cageFile))
             {
                 string line;
-                int i = 1;
+                int id = 1;
 
                 while ((line = reader.ReadLine()) != null)
                 {
                     var values = line.Split(' ');
 
                     if ((values.Length == 2) &&
-                           int.TryParse(values[0], out var minWeight) &&
-                           int.TryParse(values[1], out var maxWeight))
-                        cages.Add(new Cage(minWeight, maxWeight, i++, false));
+                        int.TryParse(values[0], out var minWeight) &&
+                        int.TryParse(values[1], out var maxWeight))
+                        _database.Cages.Add(new Cage(id++, minWeight, maxWeight));
                 }
             }
+        }
 
-            Console.WriteLine("Enter commands, one per line (press Ctrl+Z to exit):");
+        private void Run()
+        {
+            string request;
+
+            // Unix EOF
+            var exitCommand = "Ctrl+D";
+
+            // Windows EOF
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                exitCommand = "Ctrl+Z";
+
+            Console.WriteLine($"Enter commands, one per line (press {exitCommand} to exit):");
             Console.WriteLine();
 
-            while ((request = Console.ReadLine()) != null)
+            // Read commands until EOF or empty line
+            while (!string.IsNullOrEmpty(request = Console.ReadLine()))
             {
                 var values = request.Split(' ');
 
@@ -55,103 +84,87 @@ namespace MM_Kennels
                         if (values.Length != 2)
                             goto default;
 
-                        IsScheduled(values[1]);
+                        FindAndPrintAnimal(values[1]);
                         break;
 
                     case "day":
                         if ((values.Length != 2) ||
-                               !int.TryParse(values[1], out var day))
+                            !int.TryParse(values[1], out var day))
                             goto default;
 
-                        Info(day);
+                        PrintDay(day);
                         break;
 
                     case "schedule":
                         if ((values.Length != 5) ||
-                               !int.TryParse(values[2], out var weight) ||
-                               !int.TryParse(values[3], out var startDay) ||
-                               !int.TryParse(values[4], out var numDays))
+                            !int.TryParse(values[2], out var weight) ||
+                            !int.TryParse(values[3], out var startDay) ||
+                            !int.TryParse(values[4], out var numDays))
                             goto default;
 
-                        Schedule(values[1], weight, startDay, numDays);
+                        ScheduleAnimal(values[1], weight, startDay, numDays);
                         break;
 
                     default:
                         Console.WriteLine($"Invalid request: {request}");
                         break;
                 }
+
                 Console.WriteLine();
             }
         }
 
-        public static void Schedule(string petName, int petWeight, int startDay, int lengthOfStay)
+        /// <summary>
+        /// Print the information about an animal if it is in the schedule.
+        /// </summary>
+        /// <param name="name">The name of the animal.</param>
+        private void FindAndPrintAnimal(string name)
         {
-            var occupiedCages = from a in animals
-                                where startDay < a.StartDate + a.LengthOfStay && startDay + lengthOfStay > a.StartDate
-                                select a.Cage;
-            var query = from cage in cages
-                        where petWeight > cage.CageWeightMin && petWeight < cage.CageWeightMax
-                        where !occupiedCages.Contains(cage)
-                        select cage;
-            var c = query.FirstOrDefault();
+            var animal = _scheduler.GetAnimal(name);
 
-            if (c != null)
-            {
-                animals.Add(new Animal(petName, petWeight, startDay, lengthOfStay, c));
-                Console.WriteLine($"{petName} is scheduled for cage {c}");
-            }
+            if (animal != null)
+                PrintAnimal(animal);
             else
-            {
-                Console.WriteLine($"{petName} can not be scheduled for that day.");
-            }
+                Console.WriteLine($"Error: {name} not in list!");
         }
 
-
-        public static void Info(int dayNumber)
+        /// <summary>
+        /// Prints a given animal's name, weight, arrival and departure.
+        /// </summary>
+        /// <param name="animal">The animal to print.</param>
+        private void PrintAnimal(AnimalResult animal)
         {
-            List<Cage> OccupiedCages = new List<Cage>();
-            Console.WriteLine("Animals scheduled on that day:");
-            foreach (Animal a in animals)
-            {
-                if (a.StartDate <= dayNumber && a.StartDate + a.LengthOfStay > dayNumber)
-                {
-                    Console.WriteLine(a);
-                    OccupiedCages.Add(a.Cage);
-                }
-            }
-
-            Console.WriteLine();
-
-            Console.WriteLine("Cages empty on that day:");
-            foreach (var c in cages)
-            {
-                if (!OccupiedCages.Contains(c))
-                {
-                    Console.WriteLine(c);
-                }
-            }
+            Console.WriteLine($"{animal.Name} {animal.Weight} {animal.StartDay} {animal.EndDay}");
         }
 
-        public static void IsScheduled(string name)
+        /// <summary>
+        /// Print information about all animals and cages on a given day.  If
+        /// a cage is empty on the day, give the weight range.  If the cage
+        /// is full, give the animal name, weight, arrival and departure.
+        /// </summary>
+        /// <param name="day">The day to check.</param>
+        private void PrintDay(int day)
         {
-            var scheduled = false;
-            var animalInfo = "";
-            foreach (Animal a in animals)
-            {
-                if (name == a.Name)
-                {
-                    scheduled = true;
-                    animalInfo = a.ToString();
-                }
-            }
-            if (scheduled)
-            {
-                Console.WriteLine(animalInfo);
-            }
+            var cages = _scheduler.GetDay(day);
+
+            foreach (var cage in cages)
+                if (cage.Animal != null)
+                    PrintAnimal(cage.Animal);
+                else
+                    Console.WriteLine($"{cage.MinWeight}-{cage.MaxWeight}");
+        }
+
+        /// <summary>
+        /// Add an animal to the schedule, if possible.
+        /// </summary>
+        private void ScheduleAnimal(string name, int weight, int startDay, int numDays)
+        {
+            var cage = _scheduler.ScheduleAnimal(name, weight, startDay, numDays);
+
+            if (cage != null)
+                Console.WriteLine($"{name} is scheduled for cage {cage.Id}");
             else
-            {
-                Console.WriteLine($"{name} not scheduled");
-            }
+                Console.WriteLine($"{name} could not be scheduled on that day");
         }
     }
 }

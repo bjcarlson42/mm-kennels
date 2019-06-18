@@ -4,31 +4,11 @@ rufus is scheduled for cage 4
 
 mumble is scheduled for cage 1
 
-tumble is scheduled for cage 2
+tumble is scheduled for cage 1
 
-bumble is scheduled for cage 3
+bumble is scheduled for cage 1
 
-hobbes can not be scheduled for that day.
+hobbes is scheduled for cage 2
 
 whiskers is scheduled for cage 1
-
-Animals scheduled on that day:
-rufus 103 57 64
-mumble 20 57 60
-tumble 30 57 64
-bumble 40 57 67
-
-Cages empty on that day:
-
-mumble 20 57 60
-
-scoobydoo not scheduled
-
-Animals scheduled on that day:
-rufus 103 57 64
-tumble 30 57 64
-bumble 40 57 67
-
-Cages empty on that day:
-1
 
