@@ -15,4 +15,5 @@ RUN dotnet publish "MM Kennels.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "MM Kennels.dll"]
+COPY --from=publish ["/src/MM Kennels/cagedata.txt", "."]
+ENTRYPOINT ["dotnet", "MM Kennels.dll", "cagedata.txt"]
