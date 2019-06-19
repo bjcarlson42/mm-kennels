@@ -16,15 +16,23 @@ namespace MM_Kennels
 
         public AnimalResult GetAnimal(string name)
         {
-            AnimalResult animal = null;
-            foreach (Animal a in _database.Animals)
-            {
-                if (name == a.Name)
-                {
-                    animal = new AnimalResult(name, a.Weight, a.StartDate, a.LengthOfStay);
-                }               
-            }
-            return animal;
+            AnimalResult result = null;
+
+            //var animal = _database.Animals.Find(name);
+
+            //var animal = _database.Animals.FirstOrDefault(a => a.Name == name);
+
+            //var animal = _database.Animals.Where(a => a.Name == name).FirstOrDefault();
+
+            var query = from a in _database.Animals
+                        where a.Name == name
+                        select a;
+            var animal = query.FirstOrDefault();
+
+            if (animal != null)
+                result = new AnimalResult(animal.Name, animal.Weight, animal.StartDate, animal.StartDate + animal.LengthOfStay - 1);
+
+            return result;
         }
 
         public IEnumerable<CageResult> GetDay(int day)
@@ -34,22 +42,21 @@ namespace MM_Kennels
             List<Cage> OccupiedCages = new List<Cage>();
 
             //animals scheduled
-            foreach (Animal a in _database.Animals)
-            {
-                if (a.StartDate <= day && a.StartDate + a.LengthOfStay > day)
+            var a = _database.Animals.Find(animal.StartDay <= day && animal.StartDay + animal.EndDay > day); 
+ 
+                if (a != null)
                 {
-                    animal = new AnimalResult(a.Name, a.Weight, a.StartDate, a.LengthOfStay);
+                    animal = new AnimalResult(animal.Name, animal.Weight, animal.StartDay, animal.EndDay);
                     cageResult.Add(new CageResult(a.Cage.ID, a.Cage.CageWeightMin, a.Cage.CageWeightMax, animal));
                     OccupiedCages.Add(a.Cage);
-                }
-            }
+                }  
 
-            foreach(var c in _database.Cages)
+            foreach (var c in _database.Cages)
             {
                 if (!OccupiedCages.Contains(c))
                 {
-                    cageResult.Add(new CageResult(c.ID, c.CageWeightMin, c.CageWeightMax, null));                                 
-                } 
+                    cageResult.Add(new CageResult(c.ID, c.CageWeightMin, c.CageWeightMax, null));
+                }
             }
 
             return cageResult;
@@ -71,7 +78,8 @@ namespace MM_Kennels
 
             if (c != null)
             {
-                _database.Animals.Add(new Animal(name, weight, startDay, numDays) { Cage = c});
+                _database.Animals.Add(new Animal { Cage = c, Name = name, Weight = weight, StartDate = startDay, LengthOfStay = numDays});
+                _database.SaveChanges();
 
                 animal = new AnimalResult(name, weight, startDay, numDays);
                 cageResult = new CageResult(c.ID, c.CageWeightMin, c.CageWeightMax, animal); 

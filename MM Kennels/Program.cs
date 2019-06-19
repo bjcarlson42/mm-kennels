@@ -9,53 +9,19 @@ namespace MM_Kennels
     class Program
     {
         private readonly Scheduler _scheduler;
-        private readonly KennelDatabase _database;
 
-        private Program()
+        private Program(KennelDatabase _database)
         {
-            _database = new KennelDatabase();
             _scheduler = new Scheduler(_database);
         }
 
         static void Main(string[] args)
         {
-            if (args.Length < 1)
+            using (var db = new KennelDatabase())
             {
-                Console.WriteLine("Usage: mmkennels cagefile");
-                return;
-            }
+                var program = new Program(db);
 
-            if (!File.Exists(args[0]))
-            {
-                Console.WriteLine($"File not found: {args[0]}");
-                return;
-            }
-
-            var program = new Program();
-
-            program.InitializeDatabase(args[0]);
-            program.Run();
-        }
-
-        private void InitializeDatabase(string cageFile)
-        {
-            _database.Animals.Clear();
-            _database.Cages.Clear();
-
-            using (var reader = new StreamReader(cageFile))
-            {
-                string line;
-                int id = 1;
-
-                while ((line = reader.ReadLine()) != null)
-                {
-                    var values = line.Split(' ');
-
-                    if ((values.Length == 2) &&
-                        int.TryParse(values[0], out var minWeight) &&
-                        int.TryParse(values[1], out var maxWeight))
-                        _database.Cages.Add(new Cage(id++, minWeight, maxWeight));
-                }
+                program.Run();
             }
         }
 

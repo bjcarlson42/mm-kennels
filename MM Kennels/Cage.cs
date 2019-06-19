@@ -6,15 +6,9 @@ namespace MM_Kennels
 {
     class Cage
     {
-        public int CageWeightMin { get; }
-        public int CageWeightMax { get; } 
-        public int ID { get; }
-        public Cage(int id, int min, int max)
-        {
-            ID = id;
-            CageWeightMin = min;
-            CageWeightMax = max;        
-        }
+        public int CageWeightMin { get; set; }
+        public int CageWeightMax { get; set; } 
+        public int ID { get; set; }
 
         public override string ToString()
         {

@@ -1,12 +1,18 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MM_Kennels
 {
-    class KennelDatabase
+    class KennelDatabase : DbContext
     {
-        public ICollection<Animal> Animals { get; } = new List<Animal>();
-        public ICollection<Cage> Cages { get; } = new List<Cage>();
+        public DbSet<Animal> Animals { get; set; }
+        public DbSet<Cage> Cages { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=MMKennels;Integrated Security=True");
+        }
     }
 }
