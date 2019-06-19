@@ -12,17 +12,17 @@ hobbes could not be scheduled on that day
 
 whiskers is scheduled for cage 1
 
-rufus 103 57 7
-mumble 20 57 3
-tumble 30 57 7
-bumble 40 57 10
+mumble 20 57 60
+tumble 30 57 64
+bumble 40 57 67
+rufus 103 57 64
 
-mumble 20 57 3
+mumble 20 57 60
 
 Error: scoobydoo not in list!
 
-rufus 103 57 7
-tumble 30 57 7
-bumble 40 57 10
 10-50
+tumble 30 57 64
+bumble 40 57 67
+rufus 103 57 64
 
