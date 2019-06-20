@@ -42,16 +42,21 @@ namespace MM_Kennels
             List<Cage> OccupiedCages = new List<Cage>();
 
             //animals scheduled
-            var a = _database.Animals.Find(animal.StartDay <= day && animal.StartDay + animal.EndDay > day); 
- 
-                if (a != null)
-                {
-                    animal = new AnimalResult(animal.Name, animal.Weight, animal.StartDay, animal.EndDay);
-                    cageResult.Add(new CageResult(a.Cage.ID, a.Cage.CageWeightMin, a.Cage.CageWeightMax, animal));
-                    OccupiedCages.Add(a.Cage);
-                }  
+            var animalQuery = from a in _database.Animals
+                              where a.StartDate <= day && a.StartDate + a.LengthOfStay > day
+                              select a;
 
-            foreach (var c in _database.Cages)
+            foreach (Animal a in animalQuery)
+            {
+                animal = new AnimalResult(a.Name, a.Weight, a.StartDate, a.LengthOfStay);
+                cageResult.Add(new CageResult(a.Cage.ID, a.Cage.CageWeightMin, a.Cage.CageWeightMax, animal));
+                OccupiedCages.Add(a.Cage);
+            }
+
+            var cageQuery = from c in _database.Cages
+                            select c;
+
+            foreach (var c in cageQuery)
             {
                 if (!OccupiedCages.Contains(c))
                 {
@@ -78,11 +83,11 @@ namespace MM_Kennels
 
             if (c != null)
             {
-                _database.Animals.Add(new Animal { Cage = c, Name = name, Weight = weight, StartDate = startDay, LengthOfStay = numDays});
+                _database.Animals.Add(new Animal { Cage = c, Name = name, Weight = weight, StartDate = startDay, LengthOfStay = numDays });
                 _database.SaveChanges();
 
                 animal = new AnimalResult(name, weight, startDay, numDays);
-                cageResult = new CageResult(c.ID, c.CageWeightMin, c.CageWeightMax, animal); 
+                cageResult = new CageResult(c.ID, c.CageWeightMin, c.CageWeightMax, animal);
             }
             return cageResult;
         }
