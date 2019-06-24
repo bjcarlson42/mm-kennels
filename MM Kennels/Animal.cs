@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MM_Kennels
 {
-    class Animal
+    public class Animal
     {
         [Key]
         public string Name { get; set; }

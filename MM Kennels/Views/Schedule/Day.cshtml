@@ -1,0 +1,95 @@
+﻿@model IEnumerable<MM_Kennels.CageResult>
+
+@{
+    ViewData["Title"] = "Day";
+}
+
+<h1>Day</h1>
+
+<form asp-controller="Schedule" asp-action="Day" method="post">
+    <div><h6>Day number:</h6><input type="number" /></div>
+
+    <div class="col"><button type="submit" class="btn btn-primary">Find Day</button></div>
+</form>
+
+@if (Model != null)
+{
+    <h1>Cages:</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Min Weight
+                </th>
+                <th>
+                    Max Weight
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MinWeight)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MaxWeight)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    
+
+    <h1>Animals:</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Weight
+                </th>
+                <th>
+                    Start Day
+                </th>
+                <th>
+                    Length of Stay
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in animals)
+            {
+            <tr>
+                <td>
+                    @item.Animal.Name
+                </td>
+                <td>
+                    @item.Animal.Weight
+                </td>
+                <td>
+                    @item.Animal.StartDay
+                </td>
+                <td>
+                    @item.Animal.EndDay
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Back</a>
+</div>

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MM_Kennels
 {
-    class AnimalResult
+    public class AnimalResult
     {
         public AnimalResult(string name, int weight, int startDay, int endDay)
         {

@@ -1,0 +1,50 @@
+﻿@model MM_Kennels.AnimalResult
+
+@{
+    ViewData["Title"] = "Animal ";
+}
+
+<h1>Animal</h1>
+
+<form asp-controller="Schedule" asp-action="Animal" method="post">
+    <div><h6>Name of Animal:</h6><input type="search" asp-for="Name" /></div>
+
+    <div class="col"><button type="submit" class="btn btn-primary">Find Animal</button></div>
+</form>
+
+@if (Model != null)
+{
+    <div>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Weight)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Weight)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.StartDay)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.StartDay)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.EndDay)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.EndDay)
+            </dd>
+        </dl>
+    </div>
+}
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Back</a>
+</div>

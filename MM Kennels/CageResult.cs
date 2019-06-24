@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MM_Kennels
 {
-    class CageResult
+    public class CageResult
     {
         public CageResult(int id, int minWeight, int maxWeight, AnimalResult animal)
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MM_Kennels
 {
-    class Cage
+    public class Cage
     {
         public int CageWeightMin { get; set; }
         public int CageWeightMax { get; set; } 

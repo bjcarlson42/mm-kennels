@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace MM_Kennels
 {
-    class Scheduler
+    public class Scheduler
     {
         private readonly KennelDatabase _database;
 
@@ -17,12 +18,6 @@ namespace MM_Kennels
         public AnimalResult GetAnimal(string name)
         {
             AnimalResult result = null;
-
-            //var animal = _database.Animals.Find(name);
-
-            //var animal = _database.Animals.FirstOrDefault(a => a.Name == name);
-
-            //var animal = _database.Animals.Where(a => a.Name == name).FirstOrDefault();
 
             var query = from a in _database.Animals
                         where a.Name == name
@@ -42,7 +37,7 @@ namespace MM_Kennels
             List<Cage> OccupiedCages = new List<Cage>();
 
             //animals scheduled
-            var animalQuery = from a in _database.Animals
+            var animalQuery = from a in _database.Animals.Include(a => a.Cage)
                               where a.StartDate <= day && a.StartDate + a.LengthOfStay > day
                               select a;
 

@@ -5,14 +5,14 @@ using System.Text;
 
 namespace MM_Kennels
 {
-    class KennelDatabase : DbContext
+    public class KennelDatabase : DbContext
     {
+        public KennelDatabase(DbContextOptions<KennelDatabase> options)
+            : base(options)
+        {
+            
+        }
         public DbSet<Animal> Animals { get; set; }
         public DbSet<Cage> Cages { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=MMKennels;Integrated Security=True");
-        }
     }
 }
