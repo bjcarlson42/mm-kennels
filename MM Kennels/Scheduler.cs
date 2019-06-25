@@ -68,7 +68,7 @@ namespace MM_Kennels
                                 where startDay < a.StartDate + a.LengthOfStay && startDay + numDays > a.StartDate
                                 select a.Cage;
             var query = from cage in _database.Cages
-                        where weight > cage.CageWeightMin && weight < cage.CageWeightMax
+                        where weight >= cage.CageWeightMin && weight <= cage.CageWeightMax
                         where !occupiedCages.Contains(cage)
                         select cage;
             var c = query.FirstOrDefault();

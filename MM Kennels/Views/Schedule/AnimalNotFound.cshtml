@@ -1,7 +1,10 @@
-﻿@model  Scheduler
+﻿@model MM_Kennels.AnimalResult
 @{
     ViewData["Title"] = "AnimalNotFound";
 }
 
-<h1>Animal not found!</h1>
+    <h1>@Html.DisplayFor(model => model.Name) not found!</h1>
 
+<div>
+    <a asp-controller="Home" asp-action="Index">Back</a>
+</div>

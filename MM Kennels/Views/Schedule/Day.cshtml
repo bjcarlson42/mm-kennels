@@ -6,15 +6,9 @@
 
 <h1>Day</h1>
 
-<form asp-controller="Schedule" asp-action="Day" method="post">
-    <div><h6>Day number:</h6><input type="number" /></div>
-
-    <div class="col"><button type="submit" class="btn btn-primary">Find Day</button></div>
-</form>
-
 @if (Model != null)
 {
-    <h1>Cages:</h1>
+    <h3>Cages Available:</h3>
     <table class="table">
         <thead>
             <tr>
@@ -31,24 +25,22 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var cage in Model.Where(c => c.Animal == null).OrderBy(c => c.Id))
             {
                 <tr>
-                    <td>@item.Id</td>
+                    <td>@cage.Id</td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.MinWeight)
+                        @Html.DisplayFor(modelItem => cage.MinWeight)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.MaxWeight)
+                        @Html.DisplayFor(modelItem => cage.MaxWeight)
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    
-
-    <h1>Animals:</h1>
+    <h3>Animals Scheduled:</h3>
     <table class="table">
         <thead>
             <tr>
@@ -67,28 +59,27 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in animals)
+            @foreach (var animal in Model.Where(a => a.Animal != null).OrderBy(a => a.Id))
             {
-            <tr>
-                <td>
-                    @item.Animal.Name
-                </td>
-                <td>
-                    @item.Animal.Weight
-                </td>
-                <td>
-                    @item.Animal.StartDay
-                </td>
-                <td>
-                    @item.Animal.EndDay
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => animal.Animal.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => animal.Animal.Weight)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => animal.Animal.StartDay)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => animal.Animal.EndDay)
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 
 }
-
 
 <div>
     <a asp-controller="Home" asp-action="Index">Back</a>
