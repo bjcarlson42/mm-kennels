@@ -4,10 +4,9 @@
     ViewData["Title"] = "Day";
 }
 
-<h1>Day</h1>
+    <h3>Day @ViewBag.day Info:</h3>
 
-@if (Model != null)
-{
+    <hr />
     <h3>Cages Available:</h3>
     <table class="table">
         <thead>
@@ -56,6 +55,9 @@
                 <th>
                     Length of Stay
                 </th>
+                <th>
+                    Cage ID
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -74,12 +76,13 @@
                     <td>
                         @Html.DisplayFor(modelItem => animal.Animal.EndDay)
                     </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => animal.Id)
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
-
-}
 
 <div>
     <a asp-controller="Home" asp-action="Index">Back</a>

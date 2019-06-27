@@ -10,7 +10,7 @@ namespace MM_Kennels
     {
         [Key]
         public string Name { get; set; }
-        public int Weight { get; set; } 
+        public int Weight { get; set; }
         public int StartDate { get; set; }
         public int LengthOfStay { get; set; }
         

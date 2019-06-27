@@ -24,8 +24,10 @@ namespace MM_Kennels.Controllers
         public IActionResult Animal(string name)
         {          
             var animal = _scheduler.GetAnimal(name);
- 
-            if(animal != null)
+
+            ViewBag.name = name;
+
+            if (animal != null)
             {
                 return View(animal);
             }
@@ -38,7 +40,9 @@ namespace MM_Kennels.Controllers
     public IActionResult Day(int day)
         {
             var cages = _scheduler.GetDay(day);
-          
+
+            ViewBag.day = day;
+
             return View(cages);
         }
 
@@ -54,6 +58,28 @@ namespace MM_Kennels.Controllers
             {                
                 return View("AnimalNotScheduled");
             }
+        }
+
+        public IActionResult RemoveAnimal(string name)
+        {
+            var animal = _scheduler.RemoveAnimal(name);
+
+            ViewBag.name = name;
+
+            if (animal != null)
+            {
+                return View(animal);
+            }
+            else
+            {
+                return View("AnimalNotFound");
+            }
+        }
+
+        public IActionResult AllAnimals()
+        {
+            var a = _scheduler.GetAll();
+            return View(a);
         }
     }
 }
