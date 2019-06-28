@@ -86,5 +86,27 @@ namespace MM_Kennels
             }
             return cageResult;
         }
+
+        public Animal RemoveAnimal(string name)
+        {
+            var animalToRemove = _database.Animals.SingleOrDefault(a => a.Name == name);
+
+            if (animalToRemove != null)
+            {
+                _database.Animals.Remove(animalToRemove);
+                _database.SaveChanges();
+            }
+            return animalToRemove;
+        }
+
+        public List<AnimalResult> GetAll()
+        {
+            List<AnimalResult> AnimalsList = new List<AnimalResult>();
+            foreach (Animal animal in _database.Animals)
+            {
+                AnimalsList.Add(new AnimalResult(animal.Name, animal.Weight, animal.StartDate, animal.LengthOfStay));
+            }
+            return AnimalsList;
+        }
     }
 }

@@ -1,0 +1,49 @@
+﻿@model IEnumerable<MM_Kennels.AnimalResult>
+
+@{
+    ViewData["Title"] = "All Animals";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Weight (lbs.)
+            </th>
+            <th>
+                Start Day
+            </th>
+            <th>
+                End Day
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var animal in Model.OrderBy(a => a.StartDay))
+        {
+            var endDay = animal.StartDay + animal.EndDay - 1;
+            <tr>
+                <td>
+
+                    @Html.DisplayFor(modelItem => animal.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => animal.Weight)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => animal.StartDay)
+                </td>
+                <td>
+                    @endDay
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-controller="Home" asp-action="Index">Back</a>
+</div>

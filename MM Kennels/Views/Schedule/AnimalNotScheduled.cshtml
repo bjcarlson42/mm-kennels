@@ -1,9 +1,9 @@
-﻿@model MM_Kennels.Animal
+﻿@model MM_Kennels.CageResult
 @{
     ViewData["Title"] = "AnimalNotScheduled";
 }
 
-    <h1>Animal not scheduled!</h1>
+<h3>@Html.DisplayFor(model => model.Animal.Name) not scheduled!</h3>
 
 <div>
     <a asp-controller="Home" asp-action="Index">Back</a>

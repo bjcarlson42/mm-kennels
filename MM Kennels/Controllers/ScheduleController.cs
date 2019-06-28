@@ -55,5 +55,27 @@ namespace MM_Kennels.Controllers
                 return View("AnimalNotScheduled");
             }
         }
+
+        public IActionResult RemoveAnimal(string name)
+        {
+            var animal = _scheduler.RemoveAnimal(name);
+
+            ViewBag.name = name;
+
+            if (animal != null)
+            {
+                return View(animal);
+            }
+            else
+            {
+                return View("AnimalNotFound");
+            }
+        }
+
+        public IActionResult AllAnimals()
+        {
+            var listOfAnimals = _scheduler.GetAll();
+            return View(listOfAnimals);
+        }
     }
 }
